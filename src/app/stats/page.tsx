@@ -55,7 +55,12 @@ export default function StatsPage() {
                     <span className="font-medium">{count}</span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
-                    <div className={`h-full rounded-full transition-all ${status === "done" ? "bg-emerald-500" : status === "in-progress" ? "bg-amber-500" : "bg-zinc-400"}`} style={{ width: `${pct}%` }} />
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        status === "done" ? "bg-emerald-500" : status === "in-progress" ? "bg-amber-500" : "bg-zinc-400"
+                      }`}
+                      style={{ width: `${pct}%` }}
+                    />
                   </div>
                 </div>
               );

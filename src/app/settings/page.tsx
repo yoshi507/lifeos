@@ -24,11 +24,20 @@ export default function SettingsPage() {
         <div className="space-y-4">
           <div>
             <label className="mb-1.5 block text-sm font-medium">Display name</label>
-            <input value={settings.name} onChange={(e) => updateSettings({ name: e.target.value })} className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-700 dark:bg-zinc-800" />
+            <input
+              value={settings.name}
+              onChange={(e) => updateSettings({ name: e.target.value })}
+              className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-700 dark:bg-zinc-800"
+            />
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium">Email</label>
-            <input value={settings.email} onChange={(e) => updateSettings({ email: e.target.value })} type="email" className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-700 dark:bg-zinc-800" />
+            <input
+              value={settings.email}
+              onChange={(e) => updateSettings({ email: e.target.value })}
+              type="email"
+              className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-700 dark:bg-zinc-800"
+            />
           </div>
         </div>
       </section>
@@ -39,7 +48,18 @@ export default function SettingsPage() {
         </div>
         <div className="flex gap-2">
           {(["light", "dark", "system"] as const).map((t) => (
-            <button key={t} onClick={() => { setTheme(t); updateSettings({ theme: t }); }} className={`flex-1 rounded-xl border py-2.5 text-sm font-medium capitalize transition ${theme === t ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300" : "border-zinc-200 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"}`}>
+            <button
+              key={t}
+              onClick={() => {
+                setTheme(t);
+                updateSettings({ theme: t });
+              }}
+              className={`flex-1 rounded-xl border py-2.5 text-sm font-medium capitalize transition ${
+                theme === t
+                  ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300"
+                  : "border-zinc-200 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+              }`}
+            >
               {t}
             </button>
           ))}
@@ -53,7 +73,15 @@ export default function SettingsPage() {
         <p className="mb-4 text-sm text-zinc-500">
           All your data is stored locally in this browser (localStorage). Clearing browser data will reset the app.
         </p>
-        <button onClick={() => { if (confirm("Reset all LifeOS data? This cannot be undone.")) { localStorage.removeItem("lifeos-storage-v1"); window.location.reload(); } }} className="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 hover:bg-red-100 dark:border-red-900 dark:bg-red-950/30 dark:text-red-400">
+        <button
+          onClick={() => {
+            if (confirm("Reset all LifeOS data? This cannot be undone.")) {
+              localStorage.removeItem("lifeos-storage-v1");
+              window.location.reload();
+            }
+          }}
+          className="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 hover:bg-red-100 dark:border-red-900 dark:bg-red-950/30 dark:text-red-400"
+        >
           <Trash2 className="h-4 w-4" /> Reset all data
         </button>
       </section>
