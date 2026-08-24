@@ -2,11 +2,20 @@
 
 import { useLifeStore } from "@/store/useLifeStore";
 import { useTheme } from "next-themes";
-import { Settings as SettingsIcon, User, Palette, Database, Trash2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { Settings as SettingsIcon, User, Palette, Database, Trash2, LogOut } from "lucide-react";
 
 export default function SettingsPage() {
   const { settings, updateSettings } = useLifeStore();
   const { theme, setTheme } = useTheme();
+  const { user, signOut } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await signOut();
+    router.push("/login");
+  };
 
   return (
     <div className="mx-auto max-w-2xl space-y-8 animate-fade-in">
@@ -33,12 +42,18 @@ export default function SettingsPage() {
           <div>
             <label className="mb-1.5 block text-sm font-medium">Email</label>
             <input
-              value={settings.email}
-              onChange={(e) => updateSettings({ email: e.target.value })}
+              value={user?.email || settings.email}
+              disabled
               type="email"
-              className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-700 dark:bg-zinc-800"
+              className="w-full rounded-xl border border-zinc-200 bg-zinc-100 px-4 py-2.5 text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-800"
             />
           </div>
+          <button
+            onClick={handleLogout}
+            className="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 hover:bg-red-100 dark:border-red-900 dark:bg-red-950/30 dark:text-red-400"
+          >
+            <LogOut className="h-4 w-4" /> Sign out
+          </button>
         </div>
       </section>
 
@@ -71,18 +86,18 @@ export default function SettingsPage() {
           <Database className="h-4 w-4" /> Data
         </div>
         <p className="mb-4 text-sm text-zinc-500">
-          All your data is stored locally in this browser (localStorage). Clearing browser data will reset the app.
+          Your data is stored securely in Supabase and linked to your account.
         </p>
         <button
           onClick={() => {
-            if (confirm("Reset all LifeOS data? This cannot be undone.")) {
+            if (confirm("Reset all local cache? Your cloud data will remain safe.")) {
               localStorage.removeItem("lifeos-storage-v1");
               window.location.reload();
             }
           }}
-          className="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 hover:bg-red-100 dark:border-red-900 dark:bg-red-950/30 dark:text-red-400"
+          className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
         >
-          <Trash2 className="h-4 w-4" /> Reset all data
+          <Trash2 className="h-4 w-4" /> Clear local cache
         </button>
       </section>
 
