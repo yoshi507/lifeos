@@ -19,9 +19,6 @@ import {
   Smartphone,
   Monitor,
   Apple,
-  Calendar,
-  RefreshCw,
-  CheckCircle2,
 } from "lucide-react";
 
 export default function SettingsPage() {
@@ -179,43 +176,6 @@ export default function SettingsPage() {
           >
             Update password
           </button>
-        </div>
-      </section>
-
-      <section className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-        <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-          <Calendar className="h-4 w-4" /> Outlook Calendar Sync
-        </div>
-        <p className="mb-4 text-sm text-zinc-500">
-          Connect your Microsoft Outlook calendar so events stay in sync between LifeOS and Outlook.
-          This also helps events appear on Samsung Calendar when you add your Outlook account there.
-        </p>
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
-            <CheckCircle2 className="h-4 w-4 shrink-0" />
-            Outlook is connected and ready
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => {
-                setMessage("Ask me in chat: \u201cImport my Outlook events into LifeOS\u201d and I\u2019ll pull them in for you.");
-              }}
-              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
-            >
-              <RefreshCw className="h-4 w-4" /> Import from Outlook
-            </button>
-            <button
-              onClick={() => {
-                setMessage("When you create an event in the Calendar page, tell me \u201calso add this to Outlook\u201d and I\u2019ll create it there.");
-              }}
-              className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-            >
-              How to push events
-            </button>
-          </div>
-          <p className="text-xs text-zinc-400">
-            Two-way sync is available through this chat for now. Full automatic background sync will be added next.
-          </p>
         </div>
       </section>
 
