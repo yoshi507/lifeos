@@ -19,6 +19,9 @@ import {
   Smartphone,
   Monitor,
   Apple,
+  Calendar,
+  RefreshCw,
+  CheckCircle2,
 } from "lucide-react";
 
 export default function SettingsPage() {
@@ -181,6 +184,43 @@ export default function SettingsPage() {
 
       <section className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
         <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+          <Calendar className="h-4 w-4" /> Outlook Calendar Sync
+        </div>
+        <p className="mb-4 text-sm text-zinc-500">
+          Connect your Microsoft Outlook calendar so events stay in sync between LifeOS and Outlook.
+          This also helps events appear on Samsung Calendar when you add your Outlook account there.
+        </p>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+            <CheckCircle2 className="h-4 w-4 shrink-0" />
+            Outlook is connected and ready
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => {
+                setMessage("Ask me in chat: \u201cImport my Outlook events into LifeOS\u201d and I\u2019ll pull them in for you.");
+              }}
+              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
+            >
+              <RefreshCw className="h-4 w-4" /> Import from Outlook
+            </button>
+            <button
+              onClick={() => {
+                setMessage("When you create an event in the Calendar page, tell me \u201calso add this to Outlook\u201d and I\u2019ll create it there.");
+              }}
+              className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+            >
+              How to push events
+            </button>
+          </div>
+          <p className="text-xs text-zinc-400">
+            Two-way sync is available through this chat for now. Full automatic background sync will be added next.
+          </p>
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
           <Palette className="h-4 w-4" /> Appearance
         </div>
         <div className="flex gap-2">
@@ -208,25 +248,33 @@ export default function SettingsPage() {
           <Download className="h-4 w-4" /> Download the App
         </div>
         <p className="mb-4 text-sm text-zinc-500">
-          Get LifeOS on all your devices. Coming soon!
+          LifeOS is a Progressive Web App. Install it on your device for the best experience.
         </p>
-        <div className="grid grid-cols-2 gap-3">
-          <button className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700">
+        <div className="space-y-3 rounded-xl bg-indigo-50 p-4 text-sm dark:bg-indigo-950/40">
+          <p className="font-medium text-indigo-800 dark:text-indigo-200">How to install:</p>
+          <ul className="list-disc space-y-1 pl-5 text-indigo-700 dark:text-indigo-300">
+            <li><strong>Android (Chrome)</strong>: Tap the menu (⋮) → “Install app” or “Add to Home screen”</li>
+            <li><strong>iPhone (Safari)</strong>: Tap the Share button → “Add to Home Screen”</li>
+            <li><strong>Windows / Mac</strong>: In Chrome/Edge click the install icon in the address bar</li>
+          </ul>
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium dark:border-zinc-700 dark:bg-zinc-800">
             <Monitor className="h-5 w-5 text-indigo-600" />
             Windows
-          </button>
-          <button className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700">
+          </div>
+          <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium dark:border-zinc-700 dark:bg-zinc-800">
             <Apple className="h-5 w-5 text-indigo-600" />
             macOS
-          </button>
-          <button className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700">
+          </div>
+          <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium dark:border-zinc-700 dark:bg-zinc-800">
             <Smartphone className="h-5 w-5 text-indigo-600" />
             iOS
-          </button>
-          <button className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700">
+          </div>
+          <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium dark:border-zinc-700 dark:bg-zinc-800">
             <Smartphone className="h-5 w-5 text-indigo-600" />
             Android
-          </button>
+          </div>
         </div>
       </section>
 
