@@ -75,142 +75,19 @@ interface LifeState {
 const now = () => new Date().toISOString();
 const today = () => new Date().toISOString().slice(0, 10);
 
-const sampleTasks: Task[] = [
-  {
-    id: uuidv4(),
-    title: "Finish project proposal",
-    description: "Complete the Q3 product proposal deck",
-    status: "in-progress",
-    priority: "high",
-    dueDate: new Date(Date.now() + 2 * 86400000).toISOString(),
-    createdAt: now(),
-    updatedAt: now(),
-    tags: ["work", "project"],
-  },
-  {
-    id: uuidv4(),
-    title: "Morning workout",
-    status: "todo",
-    priority: "medium",
-    dueDate: new Date().toISOString(),
-    createdAt: now(),
-    updatedAt: now(),
-    tags: ["health"],
-  },
-  {
-    id: uuidv4(),
-    title: "Review weekly goals",
-    status: "todo",
-    priority: "low",
-    createdAt: now(),
-    updatedAt: now(),
-    tags: ["personal"],
-  },
-];
-
-const sampleEvents: CalendarEvent[] = [
-  {
-    id: uuidv4(),
-    title: "Team standup",
-    start: new Date(new Date().setHours(9, 0, 0, 0)).toISOString(),
-    end: new Date(new Date().setHours(9, 30, 0, 0)).toISOString(),
-    allDay: false,
-    color: "#6366f1",
-  },
-  {
-    id: uuidv4(),
-    title: "Project deadline",
-    start: new Date(Date.now() + 4 * 86400000).toISOString().slice(0, 10),
-    end: new Date(Date.now() + 4 * 86400000).toISOString().slice(0, 10),
-    allDay: true,
-    color: "#ef4444",
-  },
-];
-
-const sampleNotes: Note[] = [
-  {
-    id: uuidv4(),
-    title: "Ideas for LifeOS v2",
-    content: "• Better AI context window\n• Integrations with Google Calendar\n• Habit streaks visualization\n• Mobile app companion",
-    tags: ["product", "ideas"],
-    createdAt: now(),
-    updatedAt: now(),
-  },
-];
-
-const sampleGoals: Goal[] = [
-  {
-    id: uuidv4(),
-    title: "Launch LifeOS MVP",
-    description: "Ship a polished personal productivity OS",
-    progress: 65,
-    targetDate: new Date(Date.now() + 30 * 86400000).toISOString(),
-    createdAt: now(),
-    status: "active",
-  },
-  {
-    id: uuidv4(),
-    title: "Exercise 4x per week",
-    progress: 40,
-    createdAt: now(),
-    status: "active",
-  },
-];
-
-const sampleHabits: Habit[] = [
-  {
-    id: uuidv4(),
-    title: "Drink 2L water",
-    frequency: "daily",
-    streak: 5,
-    bestStreak: 12,
-    completedDates: [today()],
-    color: "#06b6d4",
-    createdAt: now(),
-  },
-  {
-    id: uuidv4(),
-    title: "Read 20 pages",
-    frequency: "daily",
-    streak: 3,
-    bestStreak: 21,
-    completedDates: [],
-    color: "#8b5cf6",
-    createdAt: now(),
-  },
-  {
-    id: uuidv4(),
-    title: "Evening stretch",
-    frequency: "daily",
-    streak: 0,
-    bestStreak: 7,
-    completedDates: [],
-    color: "#f59e0b",
-    createdAt: now(),
-  },
-];
-
 export const useLifeStore = create<LifeState>()(
   persist(
     (set, get) => ({
-      tasks: sampleTasks,
-      events: sampleEvents,
-      notes: sampleNotes,
-      goals: sampleGoals,
-      habits: sampleHabits,
-      notifications: [
-        {
-          id: uuidv4(),
-          title: "Welcome to LifeOS ✨",
-          message: "Your personal command centre is ready. Try the AI assistant!",
-          type: "info",
-          read: false,
-          createdAt: now(),
-        },
-      ],
+      // Start empty — nothing is created unless the user asks for it
+      tasks: [],
+      events: [],
+      notes: [],
+      goals: [],
+      habits: [],
+      notifications: [],
       settings: {
-        name: "Alex",
-        email: "alex@lifeos.app",
+        name: "",
+        email: "",
         theme: "system",
         weekStartsOn: 1,
         aiEnabled: true,
@@ -221,7 +98,7 @@ export const useLifeStore = create<LifeState>()(
           id: uuidv4(),
           role: "assistant",
           content:
-            "Hi! I'm your LifeOS AI assistant 🤖\n\nI can help you plan your week, create tasks, set goals, track habits, and more.\n\nTry saying something like:\n\"Plan my week around school, make sure I have time to exercise, and remind me about my project on Friday.\"",
+            "Hi! I'm your LifeOS AI assistant.\n\nI only create tasks, events, goals or habits when you clearly ask me to.\n\nTry: \"Create a task to finish my project by Friday\" or \"Add a daily habit to exercise\".",
           timestamp: now(),
         },
       ],
@@ -413,7 +290,7 @@ export const useLifeStore = create<LifeState>()(
             {
               id: uuidv4(),
               role: "assistant",
-              content: "Chat cleared. How can I help you today? ✨",
+              content: "Chat cleared. How can I help you today?",
               timestamp: now(),
             },
           ],
@@ -501,7 +378,7 @@ export const useLifeStore = create<LifeState>()(
       },
     }),
     {
-      name: "lifeos-storage-v1",
+      name: "lifeos-storage-v2",
       partialize: (state) => ({
         tasks: state.tasks,
         events: state.events,
