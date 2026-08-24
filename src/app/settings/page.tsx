@@ -1,10 +1,25 @@
 "use client";
 
+import { useState } from "react";
 import { useLifeStore } from "@/store/useLifeStore";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import { Settings as SettingsIcon, User, Palette, Database, Trash2, LogOut } from "lucide-react";
+import { supabase } from "@/lib/supabase/client";
+import {
+  Settings as SettingsIcon,
+  User,
+  Palette,
+  Database,
+  Trash2,
+  LogOut,
+  Key,
+  Mail,
+  Download,
+  Smartphone,
+  Monitor,
+  Apple,
+} from "lucide-react";
 
 export default function SettingsPage() {
   const { settings, updateSettings } = useLifeStore();
@@ -12,9 +27,54 @@ export default function SettingsPage() {
   const { user, signOut } = useAuth();
   const router = useRouter();
 
+  const [newEmail, setNewEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const handleLogout = async () => {
     await signOut();
     router.push("/login");
+  };
+
+  const handleChangeEmail = async () => {
+    if (!newEmail.trim()) return;
+    setLoading(true);
+    setError("");
+    setMessage("");
+    const { error } = await supabase.auth.updateUser({ email: newEmail.trim() });
+    setLoading(false);
+    if (error) {
+      setError(error.message);
+    } else {
+      setMessage("Confirmation email sent to your new address. Please check your inbox.");
+      setNewEmail("");
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (!newPassword || newPassword.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    setMessage("");
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    setLoading(false);
+    if (error) {
+      setError(error.message);
+    } else {
+      setMessage("Password updated successfully!");
+      setNewPassword("");
+      setConfirmPassword("");
+    }
   };
 
   return (
@@ -25,6 +85,17 @@ export default function SettingsPage() {
         </h1>
         <p className="text-sm text-zinc-500">Customise your LifeOS experience</p>
       </div>
+
+      {message && (
+        <div className="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+          {message}
+        </div>
+      )}
+      {error && (
+        <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-400">
+          {error}
+        </div>
+      )}
 
       <section className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
         <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
@@ -40,9 +111,9 @@ export default function SettingsPage() {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium">Email</label>
+            <label className="mb-1.5 block text-sm font-medium">Current email</label>
             <input
-              value={user?.email || settings.email}
+              value={user?.email || ""}
               disabled
               type="email"
               className="w-full rounded-xl border border-zinc-200 bg-zinc-100 px-4 py-2.5 text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-800"
@@ -53,6 +124,57 @@ export default function SettingsPage() {
             className="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 hover:bg-red-100 dark:border-red-900 dark:bg-red-950/30 dark:text-red-400"
           >
             <LogOut className="h-4 w-4" /> Sign out
+          </button>
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+          <Mail className="h-4 w-4" /> Change Email
+        </div>
+        <div className="space-y-3">
+          <input
+            type="email"
+            value={newEmail}
+            onChange={(e) => setNewEmail(e.target.value)}
+            placeholder="New email address"
+            className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-700 dark:bg-zinc-800"
+          />
+          <button
+            onClick={handleChangeEmail}
+            disabled={loading || !newEmail}
+            className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+          >
+            Update email
+          </button>
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+          <Key className="h-4 w-4" /> Change Password
+        </div>
+        <div className="space-y-3">
+          <input
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder="New password (min 6 characters)"
+            className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-700 dark:bg-zinc-800"
+          />
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirm new password"
+            className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-700 dark:bg-zinc-800"
+          />
+          <button
+            onClick={handleChangePassword}
+            disabled={loading || !newPassword}
+            className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+          >
+            Update password
           </button>
         </div>
       </section>
@@ -78,6 +200,33 @@ export default function SettingsPage() {
               {t}
             </button>
           ))}
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+          <Download className="h-4 w-4" /> Download the App
+        </div>
+        <p className="mb-4 text-sm text-zinc-500">
+          Get LifeOS on all your devices. Coming soon!
+        </p>
+        <div className="grid grid-cols-2 gap-3">
+          <button className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700">
+            <Monitor className="h-5 w-5 text-indigo-600" />
+            Windows
+          </button>
+          <button className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700">
+            <Apple className="h-5 w-5 text-indigo-600" />
+            macOS
+          </button>
+          <button className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700">
+            <Smartphone className="h-5 w-5 text-indigo-600" />
+            iOS
+          </button>
+          <button className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700">
+            <Smartphone className="h-5 w-5 text-indigo-600" />
+            Android
+          </button>
         </div>
       </section>
 
