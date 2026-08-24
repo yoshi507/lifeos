@@ -18,12 +18,12 @@ const steps = [
   {
     icon: Bot,
     title: "AI that takes action",
-    body: "Tell the assistant “Plan my week around school and exercise” and it creates the tasks, events and habits for you.",
+    body: "Tell the assistant what you need and it creates tasks, events and habits only when you ask.",
   },
   {
     icon: Calendar,
     title: "Ready to take control?",
-    body: "Your sample data is already loaded so you can explore immediately. Customise everything later in Settings.",
+    body: "Your workspace starts empty. Create tasks, events, goals and habits yourself or ask the AI to help.",
   },
 ];
 
@@ -31,7 +31,7 @@ export function Onboarding() {
   const [step, setStep] = useState(0);
   const completeOnboarding = useLifeStore((s) => s.completeOnboarding);
   const updateSettings = useLifeStore((s) => s.updateSettings);
-  const [name, setName] = useState("Alex");
+  const [name, setName] = useState("");
 
   const isLast = step === steps.length - 1;
   const Icon = steps[step].icon;
@@ -87,7 +87,7 @@ export function Onboarding() {
             <button
               onClick={() => {
                 if (isLast) {
-                  updateSettings({ name: name || "Alex" });
+                  updateSettings({ name: name || "You" });
                   completeOnboarding();
                 } else {
                   setStep(step + 1);
