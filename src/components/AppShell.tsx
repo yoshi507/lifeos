@@ -1,14 +1,54 @@
 "use client";
 
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { Onboarding } from "./Onboarding";
 import { useLifeStore } from "@/store/useLifeStore";
+import { useAuth } from "@/hooks/useAuth";
+import { Loader2 } from "lucide-react";
+
+const publicRoutes = ["/login", "/signup"];
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const onboardingComplete = useLifeStore((s) => s.settings.onboardingComplete);
+  const { user, loading } = useAuth();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const isPublic = publicRoutes.includes(pathname);
+
+  useEffect(() => {
+    if (loading) return;
+    if (!user && !isPublic) {
+      router.replace("/login");
+    }
+    if (user && isPublic) {
+      router.replace("/");
+    }
+  }, [user, loading, isPublic, router]);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      </div>
+    );
+  }
+
+  if (isPublic) {
+    return <>{children}</>;
+  }
+
+  if (!user) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950">
