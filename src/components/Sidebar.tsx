@@ -10,6 +10,7 @@ import {
   Target,
   Flame,
   Bot,
+  Bell,
   BarChart3,
   Settings,
   Sparkles,
@@ -24,6 +25,7 @@ const nav = [
   { href: "/notes", label: "Notes", icon: StickyNote },
   { href: "/goals", label: "Goals", icon: Target },
   { href: "/habits", label: "Habits", icon: Flame },
+  { href: "/reminders", label: "Reminders", icon: Bell },
   { href: "/ai", label: "AI Assistant", icon: Bot },
   { href: "/stats", label: "Analytics", icon: BarChart3 },
   { href: "/settings", label: "Settings", icon: Settings },
@@ -66,7 +68,9 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
               <Icon
                 className={cn(
                   "h-4.5 w-4.5 shrink-0",
-                  active ? "text-indigo-600 dark:text-indigo-400" : "text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300"
+                  active
+                    ? "text-indigo-600 dark:text-indigo-400"
+                    : "text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300"
                 )}
               />
               {item.label}
@@ -83,7 +87,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
       <div className="border-t border-zinc-200 p-4 dark:border-zinc-800">
         <div className="rounded-xl bg-gradient-to-br from-indigo-500/10 to-violet-500/10 p-3 dark:from-indigo-500/20 dark:to-violet-500/20">
           <p className="text-xs font-semibold text-indigo-700 dark:text-indigo-300">
-            Pro tip ✨
+            Pro tip
           </p>
           <p className="mt-1 text-[11px] leading-relaxed text-zinc-600 dark:text-zinc-400">
             Talk to the AI like a real assistant. Try “Plan my week…”
