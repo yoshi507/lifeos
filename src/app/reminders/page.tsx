@@ -38,6 +38,40 @@ export default function RemindersPage() {
     updateSettings({ notificationsEnabled: p === "granted" });
   };
 
+  const sendTestNotification = async () => {
+    if (!("Notification" in window)) {
+      alert("Notifications are not supported in this browser.");
+      return;
+    }
+    if (Notification.permission !== "granted") {
+      const p = await Notification.requestPermission();
+      setPerm(p);
+      if (p !== "granted") {
+        alert("Please allow notifications in your browser settings.");
+        return;
+      }
+    }
+    try {
+      if ("serviceWorker" in navigator) {
+        const reg = await navigator.serviceWorker.getRegistration();
+        if (reg) {
+          await reg.showNotification("LifeOS test", {
+            body: "Notifications are working!",
+            icon: "/icon-192.png",
+            tag: "lifeos-test",
+          });
+          return;
+        }
+      }
+      new Notification("LifeOS test", {
+        body: "Notifications are working!",
+        icon: "/icon-192.png",
+      });
+    } catch (e) {
+      alert("Could not show notification: " + (e as Error).message);
+    }
+  };
+
   const handleAdd = () => {
     if (!title.trim() || !datetime) return;
     addReminder({
@@ -103,14 +137,24 @@ export default function RemindersPage() {
               </>
             )}
           </div>
-          {perm !== "granted" && perm !== "unsupported" && (
-            <button
-              onClick={requestPermission}
-              className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
-            >
-              Enable notifications
-            </button>
-          )}
+          <div className="flex flex-wrap gap-2">
+            {perm !== "granted" && perm !== "unsupported" && (
+              <button
+                onClick={requestPermission}
+                className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
+              >
+                Enable notifications
+              </button>
+            )}
+            {perm === "granted" && (
+              <button
+                onClick={sendTestNotification}
+                className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+              >
+                Send test notification
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
