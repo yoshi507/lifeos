@@ -15,6 +15,9 @@ import type {
   AIAction,
   Priority,
   TaskStatus,
+  TaskList,
+  Reminder,
+  ReminderRepeat,
 } from "@/types";
 
 interface LifeState {
@@ -23,6 +26,8 @@ interface LifeState {
   notes: Note[];
   goals: Goal[];
   habits: Habit[];
+  lists: TaskList[];
+  reminders: Reminder[];
   notifications: NotificationItem[];
   settings: UserSettings;
   chatMessages: ChatMessage[];
@@ -48,6 +53,15 @@ interface LifeState {
   addHabit: (habit: Omit<Habit, "id" | "createdAt" | "streak" | "bestStreak" | "completedDates">) => void;
   toggleHabitCompletion: (id: string, date?: string) => void;
   deleteHabit: (id: string) => void;
+
+  addList: (name: string, color?: string) => void;
+  updateList: (id: string, data: Partial<TaskList>) => void;
+  deleteList: (id: string) => void;
+
+  addReminder: (r: Omit<Reminder, "id" | "createdAt" | "lastFired">) => void;
+  updateReminder: (id: string, data: Partial<Reminder>) => void;
+  deleteReminder: (id: string) => void;
+  markReminderFired: (id: string, nextDatetime?: string) => void;
 
   addNotification: (n: Omit<NotificationItem, "id" | "createdAt" | "read">) => void;
   markNotificationRead: (id: string) => void;
@@ -78,12 +92,13 @@ const today = () => new Date().toISOString().slice(0, 10);
 export const useLifeStore = create<LifeState>()(
   persist(
     (set, get) => ({
-      // Start empty — nothing is created unless the user asks for it
       tasks: [],
       events: [],
       notes: [],
       goals: [],
       habits: [],
+      lists: [],
+      reminders: [],
       notifications: [],
       settings: {
         name: "",
@@ -246,15 +261,54 @@ export const useLifeStore = create<LifeState>()(
       deleteHabit: (id) =>
         set((s) => ({ habits: s.habits.filter((h) => h.id !== id) })),
 
+      addList: (name, color) =>
+        set((s) => ({
+          lists: [{ id: uuidv4(), name, color, createdAt: now() }, ...s.lists],
+        })),
+
+      updateList: (id, data) =>
+        set((s) => ({
+          lists: s.lists.map((l) => (l.id === id ? { ...l, ...data } : l)),
+        })),
+
+      deleteList: (id) =>
+        set((s) => ({
+          lists: s.lists.filter((l) => l.id !== id),
+          tasks: s.tasks.map((t) =>
+            t.listId === id ? { ...t, listId: undefined } : t
+          ),
+        })),
+
+      addReminder: (r) =>
+        set((s) => ({
+          reminders: [{ ...r, id: uuidv4(), createdAt: now() }, ...s.reminders],
+        })),
+
+      updateReminder: (id, data) =>
+        set((s) => ({
+          reminders: s.reminders.map((r) => (r.id === id ? { ...r, ...data } : r)),
+        })),
+
+      deleteReminder: (id) =>
+        set((s) => ({ reminders: s.reminders.filter((r) => r.id !== id) })),
+
+      markReminderFired: (id, nextDatetime) =>
+        set((s) => ({
+          reminders: s.reminders.map((r) => {
+            if (r.id !== id) return r;
+            return {
+              ...r,
+              lastFired: now(),
+              datetime: nextDatetime || r.datetime,
+              enabled: r.repeat === "none" ? false : r.enabled,
+            };
+          }),
+        })),
+
       addNotification: (n) =>
         set((s) => ({
           notifications: [
-            {
-              ...n,
-              id: uuidv4(),
-              createdAt: now(),
-              read: false,
-            },
+            { ...n, id: uuidv4(), createdAt: now(), read: false },
             ...s.notifications,
           ],
         })),
@@ -338,6 +392,15 @@ export const useLifeStore = create<LifeState>()(
                 status: "active",
               });
               break;
+            case "create_reminder":
+              state.addReminder({
+                title: action.data.title,
+                message: action.data.message,
+                datetime: action.data.datetime,
+                repeat: (action.data.repeat as ReminderRepeat) || "none",
+                enabled: true,
+              });
+              break;
             case "create_habit":
               state.addHabit({
                 title: action.data.title,
@@ -378,13 +441,15 @@ export const useLifeStore = create<LifeState>()(
       },
     }),
     {
-      name: "lifeos-storage-v2",
+      name: "lifeos-storage-v3",
       partialize: (state) => ({
         tasks: state.tasks,
         events: state.events,
         notes: state.notes,
         goals: state.goals,
         habits: state.habits,
+        lists: state.lists,
+        reminders: state.reminders,
         notifications: state.notifications,
         settings: state.settings,
         chatMessages: state.chatMessages.slice(-50),
