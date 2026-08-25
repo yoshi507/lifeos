@@ -1,23 +1,13 @@
 "use client";
 
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { ReactNode, useEffect } from "react";
-import { useTheme } from "next-themes";
-import { useLifeStore } from "@/store/useLifeStore";
+import { ReactNode } from "react";
 
-function ThemeSync() {
-  const { setTheme, theme } = useTheme();
-  const stored = useLifeStore((s) => s.settings.theme);
-
-  useEffect(() => {
-    if (stored && stored !== theme) {
-      setTheme(stored);
-    }
-  }, [stored, setTheme, theme]);
-
-  return null;
-}
-
+/**
+ * Theme is owned by next-themes (localStorage key: lifeos-theme).
+ * Do NOT sync from Zustand on every theme change — that caused dark mode
+ * to flash and immediately revert to light.
+ */
 export function ThemeProvider({ children }: { children: ReactNode }) {
   return (
     <NextThemesProvider
@@ -27,7 +17,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       disableTransitionOnChange
       storageKey="lifeos-theme"
     >
-      <ThemeSync />
       {children}
     </NextThemesProvider>
   );
